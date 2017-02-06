@@ -14,4 +14,12 @@ class Comment extends Model
     {
         return $this->belongsTo('App\Models\Post');
     }
+
+    /**
+     * Get all of the owning commentable models.
+     */
+    public function commentable()
+    {
+        return $this->morphTo();
+    }
 }

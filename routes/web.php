@@ -12,12 +12,11 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('relationship');
 });
 
-Auth::routes();
 
-Route::get('/home', 'HomeController@index');
+Route::get('/', 'UserController@index');
 
 Route::get('/has-one', 'UserController@hasOne');
 
@@ -28,3 +27,13 @@ Route::get('/has-many', 'UserController@hasMany');
 Route::get('/has-many-inverse', 'UserController@hasManyInverse');
 
 Route::get('/many-to-many', 'UserController@manyToMany');
+
+Route::get('/has-many-through', 'UserController@hasManyThrough');
+
+Route::get('/polymorphic', 'UserController@polymorphic');
+
+Route::get('/many-to-many-polymorphic', 'UserController@manyToManyPolymorphic');
+
+Route::get('/eagar-load', 'UserController@eagarLoading');
+
+Route::get('/lazy-eager-load', 'UserController@lazyEagarLoad');

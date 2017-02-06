@@ -10,8 +10,32 @@ use App\Models\User;
 
 use App\Models\Phone;
 
+use App\Models\Country;
+
+use App\Models\Role;
+
+use App\Models\Tag;
+
+use App\Models\Taggable;
+
+use App\Models\Video;
+
+
+
 class UserController extends Controller
 {
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return view('relationship');
+
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -19,123 +43,113 @@ class UserController extends Controller
      */
     public function hasOne()
     {
-        $phone = User::find(2)->phone;
-
-        echo $phone->phone;
-
-        exit();
+        $phone = User::with('phone')->find(1)->toArray();
+        echo "<pre>";print_r($phone);echo "</pre>";
 
     }
 
     public function belongsTo()
     {
-        $user = Phone::find(2)->user;
-
-//        dd($user);
+        $user = Phone::with('user')->find(2)->toArray();
         echo "<pre>";print_r($user);echo "</pre>";
-
-        exit();
-
     }
 
     public function hasMany()
     {
-        $comments = Post::find(1)->comment;
-
-//        dd($comments);
+//        $comments = Post::with('comment')->find(1)->toArray();
+        $comments = Post::with(['comment'])->get()->toArray();
         echo "<pre>";print_r($comments);echo "</pre>";
-
-        exit();
-
     }
 
     public function hasManyInverse()
     {
-        $post = Comment::find(1)->post;
-
-//        dd($post);
+//        $post = Comment::with('post')->find(1)->toArray();
+        $post = Comment::with('post')->get()->toArray();
         echo "<pre>";print_r($post);echo "</pre>";
-
-        exit();
 
     }
 
     public function manyToMany()
     {
-        $users = User::find(2)->roles()->get();
+        $users = User::with(['roles'])->get()->toArray();
 
-
-
-//        dd($post);
         echo "<pre>";print_r($users);echo "</pre>";
 
-        exit();
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+    public function hasManyThrough(){
+
+        $country = Country::find(1)->posts;
+
+        dd($country);
+//        echo "<pre>";print_r($country);echo "</pre>";
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+
+    public function polymorphic(){
+
+        /*$post = Post::find(1);
+
+        foreach ($post->comments as $comment) {
+            echo "<pre>";print_r($comment);echo "</pre>";
+        }*/
+
+        /*$video = Video::find(1);
+
+        foreach ($video->comments as $comment) {
+            echo "<pre>";print_r($comment);echo "</pre>";
+        }*/
+
+
+        $post = Post::find(1)->comments;
+
+//        dd($post);
+        echo "<pre>";print_r($post);echo "</pre>";
+
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+
+    public function manyToManyPolymorphic(){        
+        
+        // Many to many Polymorphic relationship    
+
+        /*$post = Post::find(1);
+
+        foreach ($post->tags as $tag) {
+             echo "<pre>";print_r($tag);echo "</pre>";
+        }*/
+
+        $post = Post::find(1)->tags;
+
+        dd($post);
+        echo "<pre>";print_r($post);echo "</pre>";
+
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+    public function eagarLoading(){
+        $user = User::with('phone')->get();
+
+        echo "<pre>";print_r($user);echo "</pre>";       
+        
+        
+        // Eager Loading
+        $user = User::with(['phone' => function ($query) {
+                        $query->where('phone', '=', '7676767676');
+                    }])->get();
+
+        echo "<pre>";print_r($user);echo "</pre>";  
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+    public function lazyEagarLoad(){
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $user = User::all();
+
+        if ($user) {
+            $roles[] = $user->load('roles');
+        }
+        dd($roles);
+        echo "<pre>";print_r($roles);echo "</pre>";
     }
 }
